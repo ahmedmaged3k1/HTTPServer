@@ -159,14 +159,15 @@ namespace HTTPServer
               
                
                 else {
-                    
-                        fileData = File.ReadAllBytes(physicalPath);
+                    code = StatusCode.OK;
+
+                    fileData = File.ReadAllBytes(physicalPath);
                 }
                 content = Encoding.ASCII.GetString(fileData).Trim();
                 Console.WriteLine("File Content "+content);
 
                 // Create OK response
-
+                Console.WriteLine("el cooodeee   " + code);
                 return new Response(request.http, code, "text/html",content,redirectedPhysicalPath);
 
             }

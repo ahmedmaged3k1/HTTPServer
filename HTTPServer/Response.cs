@@ -34,9 +34,10 @@ namespace HTTPServer
             
             // TODO: Add headlines (Content-Type, Content-Length,Date, [location if there is redirection])
             string statusLine = GetStatusLine(code);
+            ;
            
             //HTTP/1.1
-            responseString = http +" "+200+ " "+code + "\r\nContent_Type:" + contentType + "\r\nContent_Length:" + content.Length + "\r\nDate:" + DateTime.Now + "\r\n"+ "\r\n" + content;
+            responseString = http +" "+statusLine+ " "+code + "\r\nContent_Type:" + contentType + "\r\nContent_Length:" + content.Length + "\r\nDate:" + DateTime.Now + "\r\n"+ "\r\n" + content;
             Console.WriteLine(responseString);
             
             // TODO: Create the request string
@@ -49,6 +50,13 @@ namespace HTTPServer
         {
             // TODO: Create the response status line and return it
             string statusLine = string.Empty;
+            if (code == StatusCode.OK) { return "200"; }
+            else if (code == StatusCode.NotFound) { return "404"; }
+            else if (code == StatusCode.BadRequest) { return "400"; }
+            else if (code == StatusCode.Redirect) { return "301"; }
+            else if (code == StatusCode.InternalServerError) { return "500"; }
+
+
 
             return statusLine;
         }
