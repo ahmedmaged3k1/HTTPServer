@@ -16,6 +16,8 @@ namespace HTTPServer
         Socket serverSocket;
         StatusCode code;
         bool isNotServerErorr;
+        bool isNotBadErorr;
+
 
         public Server(int portNumber, string redirectionMatrixPath)
         {
@@ -30,7 +32,7 @@ namespace HTTPServer
 
         public void StartServer()
         {
-            serverSocket.Listen(100);
+            serverSocket.Listen(2);
             while (true)
             {
                 //Accept a client Socket (will block until a client connects)
@@ -68,6 +70,7 @@ namespace HTTPServer
                     data = new byte[1024];
                     len = clientSock.Receive(data);
                     // string header = Encoding.ASCII.GetString(data).Split('\n');
+                    Console.WriteLine("Well Formated "+ Encoding.ASCII.GetString(data));
                     string[] stringSeparators = new string[] { "\n" };
                     string []header  = Encoding.ASCII.GetString(data).Split(stringSeparators, StringSplitOptions.None);
                     Console.WriteLine("lennn Headdeerrr : "+ header[0]);
@@ -171,8 +174,21 @@ namespace HTTPServer
             {
                 // TODO: log exception using Logger class
                 Logger.LogException(ex);
-                //TODO: check for bad request  Bad Request 404 
+                //TODO: check for bad request  Not Found 404 
                 if (isNotServerErorr)
+                {
+                    request.relativeURI = Configuration.NotFoundDefaultPageName;
+
+                    code = StatusCode.NotFound;
+                    byte[] fileData1 = new byte[1000];
+                    fileData1 = File.ReadAllBytes(Configuration.RootPath + "\\" + request.relativeURI);
+                    content = Encoding.ASCII.GetString(fileData1).Trim();
+                    Console.WriteLine("File Content " + content);
+
+                    return new Response(request.http, code, "text/html", content, "");
+
+                }
+                else
                 {
                     request.relativeURI = Configuration.BadRequestDefaultPageName;
 
@@ -183,9 +199,9 @@ namespace HTTPServer
                     Console.WriteLine("File Content " + content);
 
                     return new Response(request.http, code, "text/html", content, "");
-
                 }
                 // TODO: in case of exception, return Internal Server Error. 
+
                 request.relativeURI = Configuration.InternalErrorDefaultPageName;
                 
                 code = StatusCode.InternalServerError;
