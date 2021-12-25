@@ -41,7 +41,7 @@ namespace HTTPServer
             Console.WriteLine(responseString);
             
             // TODO: Create the request string
-            if (redirectoinPath != "") { responseString = responseString + "Location: " + redirectoinPath; }
+            if (redirectoinPath != "") { responseString = responseString + "Redirected To : " + redirectoinPath; }
 
 
         }

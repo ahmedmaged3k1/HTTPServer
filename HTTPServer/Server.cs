@@ -126,7 +126,7 @@ namespace HTTPServer
                 catch(Exception ex)
                 {
                     Logger.LogException(ex);
-                    request.relativeURI = Configuration.BadRequestDefaultPageName;                              
+                    request.relativeURI = Configuration.InternalErrorDefaultPageName;                              
                 }
                 //TODO: map the relativeURI in request to get the physical path of the resource.
                 String physicalPath = Configuration.RootPath + "\\" + request.relativeURI;

@@ -51,7 +51,7 @@ namespace HTTPServer
 
             //TODO: parse the receivedRequest using the \r\n delimeter   
 
-            requestString = requestString.Replace("\r\n", "\n");
+            //requestString = requestString.Replace("\r\n", "\n");
             requestLines = requestString.Split(' ');
           
 
@@ -65,20 +65,9 @@ namespace HTTPServer
                 //ValidateIsURI(relativeURI);
                 // Parse Request line
                 bool isParseRequestLine = ParseRequestLine();
-                bool isLoadHeaderLines = LoadHeaderLines();
-                bool isBlanckFound = false;
-                for (int i = 1; i < requestLines.Length; i++)
-                {
-                    // Validate blank line exists
+               // bool isLoadHeaderLines = LoadHeaderLines();
 
-                    if (requestLines[i] == "") { isBlanckFound = true; i++; }
-                    // Load header lines into HeaderLines dictionary
-
-                    if (isBlanckFound == true) { contentLines.Append(requestLines[i]); }
-                }
-
-
-                if (isParseRequestLine && isLoadHeaderLines) {
+                if (isParseRequestLine ) {
                     
 
                     return true; }
@@ -119,12 +108,12 @@ namespace HTTPServer
             catch (Exception ex) { return false; }
         }
 
-        private bool ValidateIsURI(string uri)
+       /* private bool ValidateIsURI(string uri)
         {
             return Uri.IsWellFormedUriString(uri, UriKind.RelativeOrAbsolute);
         }
-
-        private bool LoadHeaderLines()
+        */
+        /*private bool LoadHeaderLines()
         {
             try
             {
@@ -140,7 +129,7 @@ namespace HTTPServer
             {
                 return false;
             }
-        }
+        }*/
 
         private bool ValidateBlankLine()
         {
