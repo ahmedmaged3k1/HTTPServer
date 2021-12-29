@@ -31,16 +31,14 @@ namespace HTTPServer
         List<string> headerLines = new List<string>();
         public Response(string http , StatusCode code, string contentType, string content, string redirectoinPath)
         {
-            
-            // TODO: Add headlines (Content-Type, Content-Length,Date, [location if there is redirection])
+
             string statusLine = GetStatusLine(code);
             ;
-           
-            //HTTP/1.1
+
             responseString = http +" "+statusLine+ " "+code + "\r\nContent_Type:" + contentType + "\r\nContent_Length:" + content.Length + "\r\nDate:" + DateTime.Now + "\r\n"+ "\r\n" + content;
             Console.WriteLine(responseString);
             
-            // TODO: Create the request string
+     
             if (redirectoinPath != "") { responseString = responseString + "Redirected To : " + redirectoinPath; }
 
 
@@ -48,7 +46,7 @@ namespace HTTPServer
 
         private string GetStatusLine(StatusCode code)
         {
-            // TODO: Create the response status line and return it
+     
             string statusLine = string.Empty;
             if (code == StatusCode.OK) { return "200"; }
             else if (code == StatusCode.NotFound) { return "404"; }

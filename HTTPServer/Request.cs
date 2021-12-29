@@ -14,7 +14,7 @@ namespace HTTPServer
 
     public enum HTTPVersion
     {
-        HTTP10, // HTTP/1.0
+        HTTP10, 
         HTTP11,
         HTTP09
     }
@@ -24,7 +24,7 @@ namespace HTTPServer
         string[] requestLines;
         RequestMethod method;
         public string relativeURI;
-        Dictionary<string, string> headerLines;
+        Dictionary<string, string> headerLines = new Dictionary<string, string> { };
 
 
         public Request(string requestString)
@@ -40,35 +40,21 @@ namespace HTTPServer
         public  string requestString;
         string[] contentLines;
 
-        /// <summary>
-        /// Parses the request string and loads the request line, header lines and content, returns false if there is a parsing error
-        /// </summary>
-        /// <returns>True if parsing succeeds, false otherwise.</returns>
+
         public bool ParseRequest()
         {
+            string[] stringSeparators = new string[] { "\r\n" };
+            requestLines = requestString.Split(stringSeparators, StringSplitOptions.None);
+            Console.WriteLine("HEELLLOO  " + requestLines.Length);
+            Console.WriteLine("HEELLLOO  " + requestLines[0]);
+
+
+            LoadHeaderLines();
             
-
-
-            //TODO: parse the receivedRequest using the \r\n delimeter   
-
-            //requestString = requestString.Replace("\r\n", "\n");
-            requestLines = requestString.Split(' ');
-          
-
-            bool isBlanckLine = ValidateBlankLine();
-            
-
-            // check that there is atleast 3 lines: Request line, Host Header, Blank line (usually 4 lines with the last empty line for empty content)
-
-            if (requestLines.Length >= 3 && isBlanckLine == true)
+            if (requestLines.Length >= 3 )
             {
-                //ValidateIsURI(relativeURI);
-                // Parse Request line
                 bool isParseRequestLine = ParseRequestLine();
-               // bool isLoadHeaderLines = LoadHeaderLines();
-
                 if (isParseRequestLine ) {
-                    
 
                     return true; }
             }
@@ -84,8 +70,11 @@ namespace HTTPServer
         {
             try
             {
-                //String[] parts = requestLines[0].Split(' ');
-                String[] parts = requestLines;
+                
+                string[] stringSeparators = new string[] { " " };
+                String[]  parts = requestLines[0].Split(stringSeparators, StringSplitOptions.None);
+                Console.WriteLine("HEELLLOO  "+ parts[0]);
+
 
                 if (parts[0].Trim() == "GET") { method = RequestMethod.GET; }
                 else if (parts[0].Trim() == "POST") { method = RequestMethod.POST; }
@@ -95,7 +84,7 @@ namespace HTTPServer
                 relativeURI = parts[1].Trim();
                 string [] uri = relativeURI.Split('/');
                 relativeURI = uri[1];
-
+                Console.WriteLine("thee relativee uri"+relativeURI);
                 
               
                 Console.WriteLine("Triiimmmmm" + parts[2].Trim());
@@ -108,35 +97,28 @@ namespace HTTPServer
             catch (Exception ex) { return false; }
         }
 
-       /* private bool ValidateIsURI(string uri)
-        {
-            return Uri.IsWellFormedUriString(uri, UriKind.RelativeOrAbsolute);
-        }
-        */
-        /*private bool LoadHeaderLines()
+ 
+   
+        private bool LoadHeaderLines()
         {
             try
             {
+
                 for (int i = 1; i < requestLines.Length; i++)
                 {
-                    if (requestLines[i] == "") { break; }
-                    //String[] header = requestLines[i].Split(':');
-                  //  headerLines.Add(header[0].Trim(), header[1].Trim());
+                    if (requestLines[i] == "") break;
+
+                    string[] splitted = requestLines[i].Split(':');
+                    headerLines.Add(splitted[0], splitted[1]);
+
                 }
-                return true;
+
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
-        }*/
 
-        private bool ValidateBlankLine()
-        {
-            for (int i = 0; i < requestLines.Length; i++)
-            {
-                if (requestLines[i] == "") { return false; }
-            }
             return true;
         }
 
