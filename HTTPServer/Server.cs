@@ -110,6 +110,18 @@ namespace HTTPServer
                 {
                     request.ParseRequest();
                     Console.WriteLine(request.ParseRequest());
+                    if (request.requestMethod.ToLower() != "get")
+                    {
+                        request.relativeURI = Configuration.BadRequestDefaultPageName;
+
+                        code = StatusCode.BadRequest;
+                        byte[] fileData1 = new byte[1000];
+                        fileData1 = File.ReadAllBytes(Configuration.RootPath + "\\" + request.relativeURI);
+                        content = Encoding.ASCII.GetString(fileData1).Trim();
+                        Console.WriteLine("File Content " + content);
+
+                        return new Response(request.http, code, "text/html", content, "");
+                    }
                 }
                 catch(Exception ex)
                 {
@@ -172,6 +184,7 @@ namespace HTTPServer
                 }
                 else
                 {
+                   
                     request.relativeURI = Configuration.BadRequestDefaultPageName;
 
                     code = StatusCode.BadRequest;

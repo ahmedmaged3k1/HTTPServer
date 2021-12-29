@@ -22,7 +22,8 @@ namespace HTTPServer
     class Request
     {
         string[] requestLines;
-        RequestMethod method;
+         RequestMethod method;
+        public string requestMethod; 
         public string relativeURI;
         Dictionary<string, string> headerLines = new Dictionary<string, string> { };
 
@@ -61,25 +62,20 @@ namespace HTTPServer
 
             return false;
 
-
-            
-
         }
 
         private bool ParseRequestLine()
         {
             try
             {
-                
                 string[] stringSeparators = new string[] { " " };
                 String[]  parts = requestLines[0].Split(stringSeparators, StringSplitOptions.None);
                 Console.WriteLine("HEELLLOO  "+ parts[0]);
 
-
                 if (parts[0].Trim() == "GET") { method = RequestMethod.GET; }
                 else if (parts[0].Trim() == "POST") { method = RequestMethod.POST; }
                 else if (parts[0].Trim() == "HEAD") { method = RequestMethod.HEAD; }
-
+                requestMethod=parts[0].Trim();
 
                 relativeURI = parts[1].Trim();
                 string [] uri = relativeURI.Split('/');
