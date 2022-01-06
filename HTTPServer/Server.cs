@@ -68,10 +68,10 @@ namespace HTTPServer
                     data = new byte[1024];
                     len = clientSock.Receive(data);
                    
-                    Console.WriteLine("Well Formated "+ Encoding.ASCII.GetString(data));
-                    string[] stringSeparators = new string[] { "\n" };
-                    string []header  = Encoding.ASCII.GetString(data).Split(stringSeparators, StringSplitOptions.None);
-                    Console.WriteLine("lennn Headdeerrr : "+ header[0]);
+                   // Console.WriteLine("Well Formated "+ Encoding.ASCII.GetString(data));
+                   // string[] stringSeparators = new string[] { "\n" };
+                  //  string []header  = Encoding.ASCII.GetString(data).Split(stringSeparators, StringSplitOptions.None);
+                  //  Console.WriteLine("lennn Headdeerrr : "+ header[0]);
                
 
                      if (len == 0)
