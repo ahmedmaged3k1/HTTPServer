@@ -26,6 +26,8 @@ namespace HTTPServer
         public string requestMethod; 
         public string relativeURI;
         Dictionary<string, string> headerLines = new Dictionary<string, string> { };
+         public string contentLines;
+        public string contentType;
 
 
         public Request(string requestString)
@@ -39,24 +41,23 @@ namespace HTTPServer
         public string http;
         public HTTPVersion httpVersion;
         public  string requestString;
-        string[] contentLines;
+        
 
 
         public bool ParseRequest()
         {
             string[] stringSeparators = new string[] { "\r\n" };
             requestLines = requestString.Split(stringSeparators, StringSplitOptions.None);
-            Console.WriteLine("HEELLLOO  " + requestLines.Length);
-            Console.WriteLine("HEELLLOO  " + requestLines[0]);
+          
 
 
             LoadHeaderLines();
             
             if (requestLines.Length >= 3 )
             {
-                bool isParseRequestLine = ParseRequestLine();
-                if (isParseRequestLine ) {
-
+                
+                if (ParseRequestLine()) {
+                    LoadContentLines();
                     return true; }
             }
 
@@ -80,21 +81,43 @@ namespace HTTPServer
                 relativeURI = parts[1].Trim();
                 string [] uri = relativeURI.Split('/');
                 relativeURI = uri[1];
-                Console.WriteLine("thee relativee uri"+relativeURI);
-                
-              
-                Console.WriteLine("Triiimmmmm" + parts[2].Trim());
+               
+
+
                 if (parts[2].Trim().ToLower() == "http/1.1") { httpVersion = HTTPVersion.HTTP11; http = "HTTP/1.1"; }
                 else if (parts[2].Trim().ToLower() == "http/1.0") { httpVersion = HTTPVersion.HTTP10; http = "HTTP/1.0"; }
                 else if (parts[2].Trim().ToLower() == "http/0.9") { httpVersion = HTTPVersion.HTTP09; http = "HTTP/0.9"; }
                 
                 return true;
             }
-            catch (Exception ex) { return false; }
+            catch (Exception ex) {
+                Logger.LogException(ex);
+
+                return false; }
+        }
+        private bool LoadContentLines()
+        {
+            try
+            {
+
+               int  contentLineStartingIndex = requestLines.Length - 1;
+                if (requestLines[contentLineStartingIndex] != null)
+                {
+
+                    contentLines = requestLines[contentLineStartingIndex].Trim();
+                    Console.WriteLine(contentLines);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogException(e);
+                return false;
+            }
+            return true;
         }
 
- 
-   
+
+
         private bool LoadHeaderLines()
         {
             try
@@ -105,7 +128,13 @@ namespace HTTPServer
                     if (requestLines[i] == "") break;
 
                     string[] splitted = requestLines[i].Split(':');
+                    if (splitted[0] == "content-type")
+                    {
+                        contentType = splitted[1];
+                       // Console.WriteLine("Content type isss   :   "+contentType); 
+                    }
                     headerLines.Add(splitted[0], splitted[1]);
+                    
 
                 }
 

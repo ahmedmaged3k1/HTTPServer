@@ -15,8 +15,7 @@ namespace HTTPServer
         string redirectionMatrixPath;
         Socket serverSocket;
         StatusCode code;
-        bool isNotServerErorr;
-        bool isNotBadErorr;
+        bool isNotServerErorr;       
 
 
         public Server(int portNumber, string redirectionMatrixPath)
@@ -27,18 +26,21 @@ namespace HTTPServer
             IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, portNumber);
              serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             serverSocket.Bind(iPEndPoint);
-           
+            Console.WriteLine("Server is Runing on Port : " + portNumber);
+               
         }
 
         public void StartServer()
         {
+            
             serverSocket.Listen(2);
+
             while (true)
             {
                
                 Socket clientSocket = this.serverSocket.Accept();
                
-                Console.WriteLine("New client accepted:" + clientSocket.RemoteEndPoint);
+                Console.WriteLine("New client accepted : " + clientSocket.RemoteEndPoint);
            
                 Thread newthread = new Thread(new ParameterizedThreadStart
         (HandleConnection));
@@ -52,31 +54,18 @@ namespace HTTPServer
         {
        
             Socket clientSock = (Socket)obj;
- 
             clientSock.ReceiveTimeout = 0; 
-           
-            string welcome = "Welcome to my http server";
-            byte[] data = Encoding.ASCII.GetBytes(welcome);
-
+            byte[] data = new byte[1024];
             int len = 1; 
             while (true)
             {
                 try
-                {
-                    Console.WriteLine("Welcome to my http server");
-                 
-                    data = new byte[1024];
+                {   
                     len = clientSock.Receive(data);
-                   
-                   // Console.WriteLine("Well Formated "+ Encoding.ASCII.GetString(data));
-                   // string[] stringSeparators = new string[] { "\n" };
-                  //  string []header  = Encoding.ASCII.GetString(data).Split(stringSeparators, StringSplitOptions.None);
-                  //  Console.WriteLine("lennn Headdeerrr : "+ header[0]);
                
-
                      if (len == 0)
                      {
-                         Console.WriteLine("Client: {0}  ended the connection", clientSock.RemoteEndPoint);
+                         Console.WriteLine("Client: {0}  ended the connection ", clientSock.RemoteEndPoint);
                       break;
                      }
                     string requestString = Encoding.ASCII.GetString(data);
@@ -103,24 +92,23 @@ namespace HTTPServer
         {
            
             string content;
+            bool isHead = false;
+
+            bool isPost = false;
+
             try
             {
                 LoadRedirectionRules(redirectionMatrixPath);
                 try
                 {
                     request.ParseRequest();
-                    Console.WriteLine(request.ParseRequest());
-                    if (request.requestMethod.ToLower() != "get")
+                    if (request.requestMethod.ToLower() == "post")
                     {
-                        request.relativeURI = Configuration.BadRequestDefaultPageName;
-
-                        code = StatusCode.BadRequest;
-                        byte[] fileData1 = new byte[1000];
-                        fileData1 = File.ReadAllBytes(Configuration.RootPath + "\\" + request.relativeURI);
-                        content = Encoding.ASCII.GetString(fileData1).Trim();
-                        Console.WriteLine("File Content " + content);
-
-                        return new Response(request.http, code, "text/html", content, "");
+                      isPost = true;
+                    }
+                    else if (request.requestMethod.ToLower() == "head")
+                    {
+                       isHead = true;
                     }
                 }
                 catch(Exception ex)
@@ -132,6 +120,19 @@ namespace HTTPServer
                     fileDataa = File.ReadAllBytes(Configuration.RootPath + "\\" + request.relativeURI);
                     content = Encoding.ASCII.GetString(fileDataa).Trim();
                     Console.WriteLine("File Content " + content);
+                    if (isHead)
+                    {
+                        content = "";
+                        return new Response(request.http, code, "text/html", content, "");
+                    }
+                    else if (isPost)
+                    {
+                        string requestBody = request.contentLines.Trim();
+                        
+                        content = "The User Sent The Following Data : " + requestBody;
+
+                        return new Response(request.http, code, request.contentType, content, "");
+                    }
                     return new Response(request.http, code, "text/html", content, "");
 
                 }
@@ -140,8 +141,8 @@ namespace HTTPServer
                 Console.WriteLine("Physical path : "+physicalPath);
                 String redirectedPhysicalPath =  GetRedirectionPagePathIFExist(request.relativeURI);
                  isNotServerErorr = request.relativeURI.Contains(".html");
-                Console.WriteLine("el bad a5baro eh " + isNotServerErorr);
-                Console.WriteLine("Redirected Physical Path + "+ redirectedPhysicalPath);
+               // Console.WriteLine("el bad a5baro eh " + isNotServerErorr);
+              //  Console.WriteLine("Redirected Physical Path + "+ redirectedPhysicalPath);
 
 
                 byte[] fileData = new byte[1000];
@@ -160,8 +161,23 @@ namespace HTTPServer
                 content = Encoding.ASCII.GetString(fileData).Trim();
                 Console.WriteLine("File Content "+content);
 
-          
-                Console.WriteLine("el cooodeee   " + code);
+
+                //  Console.WriteLine("el cooodeee   " + code);
+                if (isHead)
+                {
+                    content = "";
+                    return new Response(request.http, code, "text/html", content, "");
+                }
+                else if (isPost)
+                {
+                    string requestBody = request.contentLines.Trim();
+                   
+                    content = "The User Sent The Following Data : " + requestBody;
+
+                    return new Response(request.http, code, request.contentType, content, "");
+                }
+
+
                 return new Response(request.http, code, "text/html",content,redirectedPhysicalPath);
 
             }
@@ -179,6 +195,19 @@ namespace HTTPServer
                     fileData1 = File.ReadAllBytes(Configuration.RootPath + "\\" + request.relativeURI);
                     content = Encoding.ASCII.GetString(fileData1).Trim();
                     Console.WriteLine("File Content " + content);
+                    if (isHead)
+                    {
+                        content = "";
+                        return new Response(request.http, code, "text/html", content, "");
+                    }
+                    else if (isPost)
+                    {
+                        string requestBody = request.contentLines.Trim();
+                        
+                        content = "The User Sent The Following Data : " + requestBody;
+
+                        return new Response(request.http, code, request.contentType, content, "");
+                    }
                     return new Response(request.http, code, "text/html", content, "");
 
                 }
@@ -192,7 +221,19 @@ namespace HTTPServer
                     fileData1 = File.ReadAllBytes(Configuration.RootPath + "\\" + request.relativeURI);
                     content = Encoding.ASCII.GetString(fileData1).Trim();
                     Console.WriteLine("File Content " + content);
+                    if (isHead)
+                    {
+                        content = "";
+                        return new Response(request.http, code, "text/html", content, "");
+                    }
+                    else if (isPost)
+                    {
+                        string requestBody = request.contentLines.Trim();
+                        
+                        content = "The User Sent The Following Data : " + requestBody;
 
+                        return new Response(request.http, code, request.contentType, content, "");
+                    }
                     return new Response(request.http, code, "text/html", content, "");
                 }
               

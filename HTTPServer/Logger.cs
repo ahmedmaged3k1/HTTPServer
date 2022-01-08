@@ -10,6 +10,7 @@ namespace HTTPServer
     class Logger
     {
         static StreamWriter sr = new StreamWriter("log.txt");
+
         public static void LogException(Exception ex)
             
         {
@@ -18,6 +19,7 @@ namespace HTTPServer
             string date = DateTime.Now.ToString();
             //message:
             string details = ex.Message;
+
             // for each exception write its details associated with datetime 
             sr.WriteLine( "The erorr is at time  " + date+"With details "  +  details);
             Debug.WriteLine("The erorr is at time  " + date + "With details " + details);
