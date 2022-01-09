@@ -13,7 +13,7 @@ namespace HTTPServer
            
             CreateRedirectionRulesFile();
             
-            Console.WriteLine("Hello");
+            
             Server server = new Server(1000, "redirectionRules.txt");
 
             // 2) Start Server

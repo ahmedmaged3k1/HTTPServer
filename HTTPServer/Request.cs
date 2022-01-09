@@ -71,7 +71,7 @@ namespace HTTPServer
             {
                 string[] stringSeparators = new string[] { " " };
                 String[]  parts = requestLines[0].Split(stringSeparators, StringSplitOptions.None);
-                Console.WriteLine("HEELLLOO  "+ parts[0]);
+                
 
                 if (parts[0].Trim() == "GET") { method = RequestMethod.GET; }
                 else if (parts[0].Trim() == "POST") { method = RequestMethod.POST; }
@@ -103,7 +103,7 @@ namespace HTTPServer
                int  contentLineStartingIndex = requestLines.Length - 1;
                 if (requestLines[contentLineStartingIndex] != null)
                 {
-
+                    requestLines[contentLineStartingIndex].Trim();
                     contentLines = requestLines[contentLineStartingIndex].Trim();
                     Console.WriteLine(contentLines);
                 }

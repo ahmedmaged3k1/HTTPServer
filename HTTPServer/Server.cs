@@ -69,6 +69,7 @@ namespace HTTPServer
                       break;
                      }
                     string requestString = Encoding.ASCII.GetString(data);
+                    Console.WriteLine(requestString);
                     Request request = new Request(requestString);
                     Response response = HandleRequest(request);
                   
@@ -170,6 +171,7 @@ namespace HTTPServer
                 }
                 else if (isPost)
                 {
+
                     string requestBody = request.contentLines.Trim();
                    
                     content = "The User Sent The Following Data : " + requestBody;
